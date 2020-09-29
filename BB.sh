@@ -75,7 +75,7 @@ tc=$bb1/Tool-Chain
 ###Kernel Image
 kimg=$ksrc1/arch/arm64/boot/Image.gz
 ### Device Tree
-devtre=$ksrc1/arch/arm64/boot/dts/hisilicon/kirin970-hikey970.dtb
+devtre=$ksrc1/arch/arm64/boot/dts/hisilicon/hi3670-hikey970.dtb
 ### Needed Packages to build image
 REQUIRED="qemu-debootstrap img2simg mkfs.ext4"
 
@@ -84,103 +84,117 @@ REQUIRED="qemu-debootstrap img2simg mkfs.ext4"
 ### MESSAGE THAT DIRECTORY OF FILE WAS CREATED
 CRE="${yt} -->> Created ${gt}"
 
-SETTC () {
-TCBAN
-		mkdir $tc
-		chmod 777 $tc
+SETTC() {
+	TCBAN
+	mkdir $tc
+	chmod 777 $tc
+	cd $tc
+	wget https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu.tar.xz
+	tar -xf gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu.tar.xz
+	rm -rf gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu.tar.xz
+	mv gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu gcc-arm-8.2
+	cd $bb1
+	CMP
+}
+
+BLDKER() {
+	thread=$(grep ^cpu\\scores /proc/cpuinfo | uniq | awk '{print $4}')
+	thduse=$(($thread - 2))
+	KERBAN
+	echo ""
+	read -n 1 -p "$gb $bt ENTER CHOICE $nl $bb B/C/G/O/X $nl"
+	if [[ $REPLY = "b" ]] || [[ $REPLY = "B" ]]; then
+		echo "$nl"
+		clear
 		cd $tc
-		wget https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu.tar.xz
-		tar -xf gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu.tar.xz
-		rm -rf gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu.tar.xz
-		mv gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu gcc-arm-8.2
-		cd $bb1
-CMP
-}
-
-BLDKER () {
-		thread=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
-		thduse=$(($thread - 2))
-		KERBAN
-		echo ""
-		read -n 1 -p "$gb $bt ENTER CHOICE $nl $bb B/C/O/X $nl"
-		if [[ $REPLY = "b" ]] || [[ $REPLY = "B" ]]; then
-			echo "$nl"
-			clear
-			cd $tc
-			export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-			export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
-			aarch64-linux-gnu-gcc --version
-			cd $ksrc1
-			export ARCH=arm64
-			make ARCH=arm64 mrproper
-			make ARCH=arm64 hikey970_defconfig
-			make ARCH=arm64 -j20
-			INSKER2
-			CMP
-		elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
-			echo "$nl"
-			clear
-			cd $tc
-			export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-			export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
-			aarch64-linux-gnu-gcc --version
-			cd $ksrc1
-			export ARCH=arm64
-			make ARCH=arm64 hikey970_defconfig
-			make menuconfig
-			make ARCH=arm64 -j20
-			INSKER2
-			CMP
-		elif [[ $REPLY = "o" ]] || [[ $REPLY = "O" ]]; then
-			clear
-			echo "$nl"
-			cd $tc
-			export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-			export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
-			aarch64-linux-gnu-gcc --version
-			cd $ksrc1
-			export ARCH=arm64
-			make ARCH=arm64 oldconfig
-			make ARCH=arm64 -j20
-			INSKER2
-			CMP
-		elif [[ $REPLY = "x" ]] || [[ $REPLY = "X" ]]; then	
-			echo "$nl"
-			SMM
-		else
-			echo "$nl"
-			echo "$yb $rt YOU PRESSED THE WRONG KEY $nl"
-			echo "$yb $rt PLEASE MAKE SELECTION FROM LIST $nl"
-			BLDKER
-		fi
+		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
+		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		aarch64-linux-gnu-gcc --version
+		cd $ksrc1
+		export ARCH=arm64
+		make ARCH=arm64 mrproper
+		make ARCH=arm64 hikey970_defconfig
+		make ARCH=arm64 -j20
+		INSKER2
+		CMP
+	elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
+		echo "$nl"
+		clear
+		cd $tc
+		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
+		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		aarch64-linux-gnu-gcc --version
+		cd $ksrc1
+		export ARCH=arm64
+		make ARCH=arm64 hikey970_defconfig
+		make menuconfig
+		make ARCH=arm64 -j20
+		INSKER2
+		CMP
+	elif [[ $REPLY = "g" ]] || [[ $REPLY = "G" ]]; then
+		echo "$nl"
+		clear
+		cd $tc
+		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
+		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		aarch64-linux-gnu-gcc --version
+		cd $ksrc1
+		export ARCH=arm64
+		make ARCH=arm64 hikey970_defconfig
+		make gconfig
+		make ARCH=arm64 -j20
+		INSKER2
+		CMP
+	elif [[ $REPLY = "o" ]] || [[ $REPLY = "O" ]]; then
+		clear
+		echo "$nl"
+		cd $tc
+		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
+		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		aarch64-linux-gnu-gcc --version
+		cd $ksrc1
+		export ARCH=arm64
+		make ARCH=arm64 oldconfig
+		make ARCH=arm64 -j20
+		INSKER2
+		CMP
+	elif [[ $REPLY = "x" ]] || [[ $REPLY = "X" ]]; then
+		echo "$nl"
+		SMM
+	else
+		echo "$nl"
+		echo "$yb $rt YOU PRESSED THE WRONG KEY $nl"
+		echo "$yb $rt PLEASE MAKE SELECTION FROM LIST $nl"
+		BLDKER
+	fi
 
 }
 
-DLKER () {
-echo "$gb $yt $bd DOWNLOADING KERNEL SOURCE $nl"
-stop1
-mkdir $ksrc
-chmod 755 $ksrc
-cd $ksrc
-git clone https://github.com/Bigcountry907/linux.git -b hikey970-v4.9-Debain-Working
-chmod 755 $ksrc/linux
-CMP
+DLKER() {
+	echo "$gb $yt $bd DOWNLOADING KERNEL SOURCE $nl"
+	stop1
+	mkdir $ksrc
+	chmod 755 $ksrc
+	cd $ksrc
+	git clone https://github.com/Bigcountry907/linux.git -b hikey970-v4.9-Debain-Working
+	chmod 755 $ksrc/linux
+	CMP
 }
 
 ### MESSAGE THAT OPERATION IS COMPLETE
-CMP () {
+CMP() {
 	echo "$gb $bd $yt Operation Complete $nl"
-    read -p "Press [Enter] to continue..."
-    clear
+	read -p "Press [Enter] to continue..."
+	clear
 }
 
 ### PAUSE WAIT FOR ENTER
-stop1 () {
-    read -p "Press [Enter] to continue..."
-    clear
+stop1() {
+	read -p "Press [Enter] to continue..."
+	clear
 }
 
-MKUSR () {
+MKUSR() {
 	USEBAN
 	usenm=""
 	pword=""
@@ -189,27 +203,27 @@ MKUSR () {
 	read -e usenm1
 	usenm=$(echo "$usenm1" | sed 's/ /_/g')
 	echo "$bb Enter The Password For this User $nl"
-	echo ""	
+	echo ""
 	read -e pword1
 	pword=$(echo "$pword1" | sed 's/ /_/g')
 	echo "$yt USERNAME =$gt $usenm"
 	echo "$yt PASSWORD = $gt $pword"
 	read -n 1 -p "ARE Username & Password Correct? $nl $bb y/n $nl"
-		if [[ $REPLY = "y" ]] || [[ $REPLY = "Y" ]]; then
-			clear
-			echo ""
-			echo "$gt You will Login to your Hikey970 With theese $nl"
-			echo "$yt USERNAME =$gt $usenm $nl"
-			echo "$yt PASSWORD = $gt $pword $nl"
-			stop1
-		else
-			echo ""
-			echo "$yb $rt TRY AGAIN $nl"
-			MKUSR
-		fi
+	if [[ $REPLY = "y" ]] || [[ $REPLY = "Y" ]]; then
+		clear
+		echo ""
+		echo "$gt You will Login to your Hikey970 With theese $nl"
+		echo "$yt USERNAME =$gt $usenm $nl"
+		echo "$yt PASSWORD = $gt $pword $nl"
+		stop1
+	else
+		echo ""
+		echo "$yb $rt TRY AGAIN $nl"
+		MKUSR
+	fi
 }
 
-NETCFG () {
+NETCFG() {
 	ap=""
 	pw=""
 	echo "$yb $bt CONFIGURING NETWORK $nl"
@@ -238,119 +252,121 @@ NETCFG () {
 	fi
 }
 
-SETMR () {
-### SET Mirror for ubuntu src https://launchpad.net/ubuntu/+archivemirrors
+SETMR() {
+	### SET Mirror for ubuntu src https://launchpad.net/ubuntu/+archivemirrors
 	MIRBAN
-		echo "$bb $yt $bd CHOOSE A MIRROR TO DOWNLOAD FROM $nl"
-		echo "$bb Type the Letter to Choose or Type F to enter a custom Mirror $nl"
+	echo "$bb $yt $bd CHOOSE A MIRROR TO DOWNLOAD FROM $nl"
+	echo "$bb Type the Letter to Choose or Type F to enter a custom Mirror $nl"
+	echo ""
+	echo "$rt A) $gt http://ftp.tu-chemnitz.de/pub/linux/ubuntu-ports/ $nl"
+	echo "$yt SPEED = 1 Gbps / Country = Germany $nl"
+	echo ""
+	echo "$rt b) $gt http://dafi.inf.um.es/ubuntu/ $nl"
+	echo "$yt SPEED = 100 Mbs / Country = Spain $nl"
+	echo ""
+	echo "$rt c) $gt http://mirrors.ustc.edu.cn/ubuntu-ports $nl"
+	echo "$yt SPEED = ??? / Country = China $nl"
+	echo ""
+	echo "$rt E) $rt ENTER CUSTOM MIRROR ADDRESS $nl"
+	echo ""
+	mirror=""
+	read -n 1 -p "CHOOSE A B C, or D to type your own $nl $bb a/b/c/d/ $nl"
+	if [[ $REPLY = "A" ]] || [[ $REPLY = "a" ]]; then
+		mirror=http://ftp.tu-chemnitz.de/pub/linux/ubuntu-ports/
 		echo ""
-		echo "$rt A) $gt http://ftp.tu-chemnitz.de/pub/linux/ubuntu-ports/ $nl"
 		echo "$yt SPEED = 1 Gbps / Country = Germany $nl"
+		echo "$bb Selected ->> $mirror $nl"
 		echo ""
-		echo "$rt b) $gt http://dafi.inf.um.es/ubuntu/ $nl"
+		stop1
+	elif [[ $REPLY = "b" ]] || [[ $REPLY = "B" ]]; then
+		mirror=http://dafi.inf.um.es/ubuntu/
+		echo ""
+		echo "$yt SPEED = 10 Gbps / Country = Norway $nl"
+		echo "$bb Selected ->> $mirror $nl"
+		echo ""
+		stop1
+	elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
+		mirror=http://mirrors.ustc.edu.cn/ubuntu-ports
+		echo ""
 		echo "$yt SPEED = 100 Mbs / Country = Spain $nl"
+		echo "$bb Selected ->> $mirror $nl"
 		echo ""
-		echo "$rt c) $gt http://mirrors.ustc.edu.cn/ubuntu-ports $nl"
-		echo "$yt SPEED = ??? / Country = China $nl"
+		stop1
+	elif [[ $REPLY = "d" ]] || [[ $REPLY = "D" ]]; then
+		echo "$yt CUSTOM MIRROR $nl"
+		mirror=
+		echo "$gb $rt ENTER MIRROR TO USE $nl"
+		read -e usenm5
+		mirror=$(echo "$usenm5" | sed 's/ /_/g')
 		echo ""
-		echo "$rt E) $rt ENTER CUSTOM MIRROR ADDRESS $nl"
-		echo ""		
-		mirror=""
-		read -n 1 -p "CHOOSE A B C, or D to type your own $nl $bb a/b/c/d/ $nl"
-			if [[ $REPLY = "A" ]] || [[ $REPLY = "a" ]]; then
-				mirror=http://ftp.tu-chemnitz.de/pub/linux/ubuntu-ports/
-				echo ""
-				echo "$yt SPEED = 1 Gbps / Country = Germany $nl"
-				echo "$bb Selected ->> $mirror $nl"
-				echo ""
-				stop1
-			elif [[ $REPLY = "b" ]] || [[ $REPLY = "B" ]]; then
-				mirror=http://dafi.inf.um.es/ubuntu/
-				echo ""
-				echo "$yt SPEED = 10 Gbps / Country = Norway $nl"
-				echo "$bb Selected ->> $mirror $nl"
-				echo ""
-				stop1
-			elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
-				mirror=http://mirrors.ustc.edu.cn/ubuntu-ports
-				echo ""
-				echo "$yt SPEED = 100 Mbs / Country = Spain $nl"
-				echo "$bb Selected ->> $mirror $nl"
-				echo ""
-				stop1
-			elif [[ $REPLY = "d" ]] || [[ $REPLY = "D" ]]; then
-					echo "$yt CUSTOM MIRROR $nl"
-				mirror=
-					echo "$gb $rt ENTER MIRROR TO USE $nl"
-					read -e usenm5
-					mirror=$(echo "$usenm5" | sed 's/ /_/g')
-					echo ""
-					echo "$bb Enter The Mirror address $nl"
-					echo ""
-					echo "$bb Selected ->> $mirror $nl"
-					echo ""	
-					stop1
-			else
-				echo "$rt YOU HIT A BAD KEY TRY AGAIN $nl"
-				SETMR
-			fi
-}
-
-MAMN () {
-echo "$yt $it $bd (1) CREATE MINIMAL BASE ROOT FILESYSTEM $nl"
-echo ""
-echo "$yt $it $bd (2) BUILD KERNEL LINUX v4.9.78 $nl"
-echo ""
-echo "$yt $it $bd (3) COPY KERNEL & DEVICE TREE / INSTALL KERNEL MODULES in ROOTFS $nl"
-echo ""
-echo "$yt $it $bd (4) GENERATE FLASHABLE AND COMPRESSED IMAGES $nl"
-echo ""
-echo "$yt $it $bd (5) UPDATE GRUB CONFIGURATION IN BOOT.IMG AND BOARD $nl"
-echo ""
-echo ""
-echo "$yt $rb $it $bd (99) EXIT BUILDER $nl"
-echo ""
-}
-
-FRDS () {
-	echo "FINDING EXSISTING BUILDS"
-    if [ -d $bb2 ] && [ -d $bb3 ] && [ -d $bb4 ] && [ -d $bb5 ] && [ -d $bb6 ]; then
-        echo "$rb $yt Rootfs Found / Previous Build Exsist $nl"
-		echo "$rt $yb"
-			REPLY=""
-			read -n 1 -p "Press r to Rename / d to delete / x to exit $nl $bb r/d/x $nl"
-			if [[ $REPLY = "d" ]] || [[ $REPLY = "D" ]]; then
-				rm -rf $bbb2
-				echo "$nl"
-				echo "$rb $yt Previous Build Removed $nl"
-				echo "$gb $bt Re-Create Directory Structure $nl"
-			elif [[ $REPLY = "r" ]] ||[[ $REPLY = "R" ]]; then
-				echo "$yt Rename Previous Build $nl"
-				echo "$bb Enter Name for Backup $nl"
-				read -e backup1
-				backup=$(echo "$backup1" | sed 's/ /_/g')
-				mv $bb2 $bb1/$backup
-				echo "$bb Previous Build Renamed to $backup $nl"
-			elif [[ $REPLY = "x" ]] ||[[ $REPLY = "X" ]]; then
-				echo "$yt User Choose Exit $nl"
-				echo "$rt $yb Returning to Main Menu $nl"
-				SMM	
-			else 
-				echo "$rt You Pressed a Invalid Key $nl"
-				FRDS
-			fi
-    else
-        echo "$yt Creating Rootfs Directory Structure $nl"
-    fi
-}
-
-MRTFS () {
-	if [ -d $bbb2 ]; then
-	chmod 777 $bbb2
-	echo "Ubuntu-SRC Found"
+		echo "$bb Enter The Mirror address $nl"
+		echo ""
+		echo "$bb Selected ->> $mirror $nl"
+		echo ""
+		stop1
 	else
-	mkdir $bbb2
-	chmod 777 $bbb2
+		echo "$rt YOU HIT A BAD KEY TRY AGAIN $nl"
+		SETMR
+	fi
+}
+
+MAMN() {
+	echo "$yt $it $bd (1) CREATE MINIMAL BASE ROOT FILESYSTEM $nl"
+	echo ""
+	echo "$yt $it $bd (2) BUILD KERNEL LINUX v4.9.78 $nl"
+	echo ""
+	echo "$yt $it $bd (3) COPY KERNEL & DEVICE TREE / INSTALL KERNEL MODULES in ROOTFS $nl"
+	echo ""
+	echo "$yt $it $bd (4) GENERATE FLASHABLE AND COMPRESSED IMAGES $nl"
+	echo ""
+	echo "$yt $it $bd (5) UPDATE GRUB CONFIGURATION IN BOOT.IMG AND BOARD $nl"
+	echo ""
+	echo "$yt $it $bd (6) FLASH IMAGE $nl"
+	echo ""
+	echo ""
+	echo "$yt $rb $it $bd (q) EXIT BUILDER $nl"
+	echo ""
+}
+
+FRDS() {
+	echo "FINDING EXSISTING BUILDS"
+	if [ -d $bb2 ] && [ -d $bb3 ] && [ -d $bb4 ] && [ -d $bb5 ] && [ -d $bb6 ]; then
+		echo "$rb $yt Rootfs Found / Previous Build Exsist $nl"
+		echo "$rt $yb"
+		REPLY=""
+		read -n 1 -p "Press r to Rename / d to delete / x to exit $nl $bb r/d/x $nl"
+		if [[ $REPLY = "d" ]] || [[ $REPLY = "D" ]]; then
+			rm -rf $bbb2
+			echo "$nl"
+			echo "$rb $yt Previous Build Removed $nl"
+			echo "$gb $bt Re-Create Directory Structure $nl"
+		elif [[ $REPLY = "r" ]] || [[ $REPLY = "R" ]]; then
+			echo "$yt Rename Previous Build $nl"
+			echo "$bb Enter Name for Backup $nl"
+			read -e backup1
+			backup=$(echo "$backup1" | sed 's/ /_/g')
+			mv $bb2 $bb1/$backup
+			echo "$bb Previous Build Renamed to $backup $nl"
+		elif [[ $REPLY = "x" ]] || [[ $REPLY = "X" ]]; then
+			echo "$yt User Choose Exit $nl"
+			echo "$rt $yb Returning to Main Menu $nl"
+			SMM
+		else
+			echo "$rt You Pressed a Invalid Key $nl"
+			FRDS
+		fi
+	else
+		echo "$yt Creating Rootfs Directory Structure $nl"
+	fi
+}
+
+MRTFS() {
+	if [ -d $bbb2 ]; then
+		chmod 777 $bbb2
+		echo "Ubuntu-SRC Found"
+	else
+		mkdir $bbb2
+		chmod 777 $bbb2
 	fi
 	mkdir $bb2
 	chmod 777 $bb2
@@ -378,9 +394,9 @@ MRTFS () {
 	chmod 755 $bb13
 	mkdir $bb14
 	chmod 755 $bb14
-	mkdir $bb15	
+	mkdir $bb15
 	chmod 755 $bb15
-	mkdir $bb17	
+	mkdir $bb17
 	chmod 755 $bb17
 	mkdir $bb18
 	chmod 755 $bb18
@@ -394,17 +410,23 @@ MRTFS () {
 	chmod 755 $bb22
 }
 
-GRUB () {
-mkdir $bb1/Install/mnt
-sudo mount -o loop $bb1/Install/boot-hikey970.uefi.img $bb1/Install/mnt
-cp -arv $bf/grub.cfg $bb9/
-cp -arv $bf/grub.cfg $bb1/Install/mnt/boot/grub/
-sudo umount $bb1/Install/mnt
-rm -rf $bb1/Install/mnt
-CMP
+GRUB() {
+	mkdir $bb1/Install/mnt
+	sudo mount -o loop $bb1/Install/boot-hikey970.uefi.img $bb1/Install/mnt
+	cp -arv $bf/grub.cfg $bb9/
+	cp -arv $bf/grub.cfg $bb1/Install/mnt/boot/grub/
+	sudo umount $bb1/Install/mnt
+	rm -rf $bb1/Install/mnt
+	CMP
 }
 
-CPFS () {
+FLIMG() {
+	cd $bb1/Install
+	sudo sh ./update_Hikey970.sh
+	cd ..
+}
+
+CPFS() {
 	cp -a $bf/fastboot.efi $bb10/
 	cp -a $bf/grub.cfg $bb9/
 	cp -a $bf/1920x1080.bin $bb22/
@@ -415,9 +437,9 @@ CPFS () {
 	cp -a $bf/wl18xx-conf.bin $bb15/
 	chown 0.0 $bb15/wl18xx-conf.bin
 	chmod 755 $bb15/wl18xx-conf.bin
-	cp -a $bf/LICENSE $bb2/		
+	cp -a $bf/LICENSE $bb2/
 	cp -a $bf/11-image-support $bb12/
-	cp -a $bf/libmali.so $bb21/	
+	cp -a $bf/libmali.so $bb21/
 	cp -a $bf/keyrings/* $bb19/
 	MKUSR
 	touch $bb7/init.sh
@@ -455,7 +477,7 @@ CPFS () {
 	echo "#!/bin/bash" | sudo tee -a $bb5/rc.local
 	echo "# re-generate ssh host key" | sudo tee -a $bb5/rc.local
 	echo "test -f /etc/ssh/ssh_host_rsa_key || dpkg-reconfigure openssh-server" | sudo tee -a $bb5/rc.local
-	echo "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" | sudo tee -a $bb5/rc.local	
+	echo "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" | sudo tee -a $bb5/rc.local
 	chmod 775 $bb5/rc.local
 	echo "$bb5/rc.local" $CRE
 	clear
@@ -478,75 +500,75 @@ CPFS () {
 	echo "             dhcp6: true" | sudo tee -a $bb11/01-dhcp.yaml
 	echo "             access-points:" | sudo tee -a $bb11/01-dhcp.yaml
 	echo "                 $ap" | sudo tee -a $bb11/01-dhcp.yaml
-	echo "                     password: $pw" | sudo tee -a $bb11/01-dhcp.yaml		
+	echo "                     password: $pw" | sudo tee -a $bb11/01-dhcp.yaml
 }
 
-MKIMG () {
-DISTRO=${DISTRO:-"bionic"}
-VERSION=V-2.0
-SYSTEM_SIZE=${SYSTEM_SIZE:-'2560'} # 1G
-echo "Building image" $SYSTEM_SIZE
-dd if=/dev/zero of=$bb2/rootfs.img bs=1M count=$SYSTEM_SIZE conv=sparse
-mkfs.ext4 -L rootfs $bb2/rootfs.img
+MKIMG() {
+	DISTRO=${DISTRO:-"bionic"}
+	VERSION=V-2.0
+	SYSTEM_SIZE=${SYSTEM_SIZE:-'5120'} # 2G
+	echo "Building image" $SYSTEM_SIZE
+	dd if=/dev/zero of=$bb2/rootfs.img bs=1M count=$SYSTEM_SIZE conv=sparse
+	mkfs.ext4 -L rootfs $bb2/rootfs.img
 
-if [[ ! -d $bb2/loop ]]; then
-	mkdir $bb2/loop
-	mount -t ext4 -o loop $bb2/rootfs.img $bb2/loop
-else
-	echo "Loop Exsist"
-	mount -t ext4 -o loop $bb2/rootfs.img $bb2/loop
-fi
+	if [[ ! -d $bb2/loop ]]; then
+		mkdir $bb2/loop
+		mount -t ext4 -o loop $bb2/rootfs.img $bb2/loop
+	else
+		echo "Loop Exsist"
+		mount -t ext4 -o loop $bb2/rootfs.img $bb2/loop
+	fi
 
-echo "Copying root"
-echo "$gt"
-cp -arv $bb3/* $bb2/loop/
-echo "Umount $nl"
-umount $bb2/loop
+	echo "Copying root"
+	echo "$gt"
+	cp -arv $bb3/* $bb2/loop/
+	echo "Umount $nl"
+	umount $bb2/loop
 
-echo "Building sparse"
-export SPARSE_IMG="ubuntu_$DISTRO.hikey970.$VERSION.sparse.img"
-img2simg $bb2/rootfs.img $bb2/$SPARSE_IMG
+	echo "Building sparse"
+	export SPARSE_IMG="ubuntu_$DISTRO.hikey970.$VERSION.sparse.img"
+	img2simg $bb2/rootfs.img $bb2/$SPARSE_IMG
 
-echo "Cleaning Up"
-rm -rf $bb2/rootfs.img
+	echo "Cleaning Up"
+	rm -rf $bb2/rootfs.img
 
-cp -rf $bb2/$SPARSE_IMG $bb1/Install
-cd $bb1/Install
-tar -czvf $SPARSE_IMG.tar.gz $SPARSE_IMG
-rm -rf $bb2/$SPARSE_IMG
+	cp -rf $bb2/$SPARSE_IMG $bb1/Install
+	cd $bb1/Install
+	tar -czvf $SPARSE_IMG.tar.gz $SPARSE_IMG
+	rm -rf $bb2/$SPARSE_IMG
 
-echo "ALL COMPLETE"
-ls -lha $bb1/Install/$SPARSE_IMG
-sha1sum $bb1/Install/$SPARSE_IMG
-echo ""
-echo ""
-ls -lha $bb1/Install/Kernel-Install.tar.gz
-sha1sum $bb1/Install/Kernel-Install.tar.gz
-CMP
+	echo "ALL COMPLETE"
+	ls -lha $bb1/Install/$SPARSE_IMG
+	sha1sum $bb1/Install/$SPARSE_IMG
+	echo ""
+	echo ""
+	ls -lha $bb1/Install/Kernel-Install.tar.gz
+	sha1sum $bb1/Install/Kernel-Install.tar.gz
+	CMP
 }
 
-INSKER () {
-echo "$gb $bt COPY KERNEL $nl"
-if [[ ! -f $bb4/Image-hikey970-v4.9.gz ]]; then
-	cp -avrf $kimg $bb4/  
-	mv $bb4/Image.gz $bb4/Image-hikey970-v4.9.gz
-	echo "$gb $bt Image Copied $nl"
-else
-	rm -rf $bb4/Image-hikey970-v4.9.gz
-	cp -avrf $kimg $bb4/  
-	mv $bb4/Image.gz $bb4/Image-hikey970-v4.9.gz
-	echo "$gb $bt Image Copied $nl"
-fi
-echo "$gb $bt COPY DEVICE TREE $nl"
-if [[ ! -f $bb4/kirin970-hikey970.dtb ]]; then
-	cp -avrf $devtre $bb4/
-	echo "$gb $bt DEVICE TREE Copied $nl"
-else
-	rm -rf $bb4/kirin970-hikey970.dtb
-	cp -avrf $devtre $bb4/
-	echo "$gb $bt DEVICE TREE Copied $nl"
-fi
-echo "$gb $bt INSTALL MODULES $nl"
+INSKER() {
+	echo "$gb $bt COPY KERNEL $nl"
+	if [[ ! -f $bb4/Image-hikey970-v4.9.gz ]]; then
+		cp -avrf $kimg $bb4/
+		mv $bb4/Image.gz $bb4/Image-hikey970-v4.9.gz
+		echo "$gb $bt Image Copied $nl"
+	else
+		rm -rf $bb4/Image-hikey970-v4.9.gz
+		cp -avrf $kimg $bb4/
+		mv $bb4/Image.gz $bb4/Image-hikey970-v4.9.gz
+		echo "$gb $bt Image Copied $nl"
+	fi
+	echo "$gb $bt COPY DEVICE TREE $nl"
+	if [[ ! -f $bb4/hi3670-hikey970.dtb ]]; then
+		cp -avrf $devtre $bb4/
+		echo "$gb $bt DEVICE TREE Copied $nl"
+	else
+		rm -rf $bb4/hi3670-hikey970.dtb
+		cp -avrf $devtre $bb4/
+		echo "$gb $bt DEVICE TREE Copied $nl"
+	fi
+	echo "$gb $bt INSTALL MODULES $nl"
 	cd $tc
 	export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
 	export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
@@ -556,290 +578,299 @@ echo "$gb $bt INSTALL MODULES $nl"
 	make ARCH=arm64 INSTALL_MOD_PATH=$bb3/ modules_install
 }
 
-INSKER2 () {
-echo "$gb $bt COPY KERNEL $nl"
-if [[ ! -d $bb1/Install/kernel-install/ ]]; then
-	mkdir $bb1/Install/kernel-install
-else
-	echo "$gb $bt kernel-install found $nl"
-fi
-if [[ ! -f $bb1/Install/kernel-install/Image-hikey970-v4.9.gz ]]; then
-	cp -avrf $kimg $bb4/  
-	mv $bb4/Image.gz $bb1/Install/kernel-install/Image-hikey970-v4.9.gz
-	echo "$gb $bt Image Copied $nl"
-else
-	rm -rf $bb1/Install/kernel-install/Image-hikey970-v4.9.gz
-	cp -avrf $kimg $bb4/  
-	mv $bb4/Image.gz $bb1/Install/kernel-install/Image-hikey970-v4.9.gz
-	echo "$gb $bt Image Copied $nl"
-fi
-echo "$gb $bt COPY DEVICE TREE $nl"
-if [[ ! -f $bb1/Install/kernel-install/kirin970-hikey970.dtb ]]; then
-	cp -avrf $devtre $bb1/Install/kernel-install/
-	echo "$gb $bt DEVICE TREE Copied $nl"
-else
-	rm -rf $bb1/Install/kernel-install/kirin970-hikey970.dtb
-	cp -avrf $devtre $bb1/Install/kernel-install/
-	echo "$gb $bt DEVICE TREE Copied $nl"
-fi
-echo "$gb $bt INSTALL MODULES $nl"
+INSKER2() {
+	echo "$gb $bt COPY KERNEL $nl"
+	if [[ ! -d $bb1/Install/kernel-install/ ]]; then
+		mkdir $bb1/Install/kernel-install
+	else
+		echo "$gb $bt kernel-install found $nl"
+	fi
+	if [[ ! -f $bb1/Install/kernel-install/Image-hikey970-v4.9.gz ]]; then
+		cp -avrf $kimg $bb4/
+		mv $bb4/Image.gz $bb1/Install/kernel-install/Image-hikey970-v4.9.gz
+		echo "$gb $bt Image Copied $nl"
+	else
+		rm -rf $bb1/Install/kernel-install/Image-hikey970-v4.9.gz
+		cp -avrf $kimg $bb4/
+		mv $bb4/Image.gz $bb1/Install/kernel-install/Image-hikey970-v4.9.gz
+		echo "$gb $bt Image Copied $nl"
+	fi
+	echo "$gb $bt COPY DEVICE TREE $nl"
+	if [[ ! -f $bb1/Install/kernel-install/hi3670-hikey970.dtb ]]; then
+		cp -avrf $devtre $bb1/Install/kernel-install/
+		echo "$gb $bt DEVICE TREE Copied $nl"
+	else
+		rm -rf $bb1/Install/kernel-install/hi3670-hikey970.dtb
+		cp -avrf $devtre $bb1/Install/kernel-install/
+		echo "$gb $bt DEVICE TREE Copied $nl"
+	fi
+	echo "$gb $bt INSTALL MODULES $nl"
 	cd $ksrc1
 	export ARCH=arm64
 	make ARCH=arm64 INSTALL_MOD_PATH=$bb1/Install/kernel-install/ modules_install
-echo "$gb $bt COMPRESS KERNEL DTB & MODULES $nl"
-tar cpzf $bb1/Install/Kernel-Install.tar.gz $bb1/Install/kernel-install/*
-echo "$gb $bt Kernel-Install.tar.gz CREATED $nl"
+	echo "$gb $bt COMPRESS KERNEL DTB & MODULES $nl"
+	tar cpzf $bb1/Install/Kernel-Install.tar.gz $bb1/Install/kernel-install/*
+	echo "$gb $bt Kernel-Install.tar.gz CREATED $nl"
 
 	echo "CLEAN UP -->>> ALL FILES ARE NOW IN Kernel-Install.tar.gz "
 	echo "Removing Modules Folder"
 	rm -rf $bb1/Install/kernel-install
 }
 
-INIT1 () {
-echo "$gb $bt INITIALIZE SYSTEM $nl"
-echo "$gb $bt UPDATE /etc/apt/sources.list $nl"
-cp -arv $bf/sources.list $bb23
-echo "$gb $bt COPY INIT.SH FOR SETUP $nl"
-cp -arv $bf/init.sh $bb5
-chmod 755 $bb5/init.sh
-echo "$yt Set Language -->>$nl" 
-echo "$gt Default Language US English $nl"
-sudo chroot $bb3 /root/locale.sh
-echo "gt Locale set $nl"
-sudo chroot $bb3 /root/init.sh
+INIT1() {
+	echo "$gb $bt INITIALIZE SYSTEM $nl"
+	echo "$gb $bt UPDATE /etc/apt/sources.list $nl"
+	cp -arv $bf/sources.list $bb23
+	echo "$gb $bt COPY INIT.SH FOR SETUP $nl"
+	cp -arv $bf/init.sh $bb5
+	chmod 755 $bb5/init.sh
+	echo "$yt Set Language -->>$nl"
+	echo "$gt Default Language US English $nl"
+	sudo chroot $bb3 /root/locale.sh
+	echo "gt Locale set $nl"
+	sudo chroot $bb3 /root/init.sh
 }
 
 ### Command to download required ubuntu sources
-DLSRC () {
-DISTRO=${DISTRO:-"bionic"}
-MIRRORS=${MIRRORS:-}
-SOFTWARE=${SOFTWARE:-"ssh,zsh,tmux,linux-firmware,vim-nox,net-tools,network-manager,wget,tasksel,gnupg2,nano,net-tools,wpasupplicant,parted,fakeroot,kernel-wedge,build-essential,python-pip,kernel-package,ccache,libssl-dev,gcc"}
-qemu-debootstrap --arch arm64 --include=$SOFTWARE --components=main,multiverse,universe $DISTRO $bb3 $mirror
+DLSRC() {
+	DISTRO=${DISTRO:-"bionic"}
+	MIRRORS=${MIRRORS:-}
+	SOFTWARE=${SOFTWARE:-"ssh,zsh,tmux,linux-firmware,vim-nox,net-tools,network-manager,wget,tasksel,gnupg2,nano,net-tools,wpasupplicant,parted,fakeroot,kernel-wedge,build-essential,python-pip,kernel-package,ccache,libssl-dev,gcc"}
+	qemu-debootstrap --arch arm64 --include=$SOFTWARE --components=main,multiverse,universe $DISTRO $bb3 $mirror
 }
 
 ##################################### MAIN MENU #####################################
-SMM () {
-    clear               
+SMM() {
+	clear
 	BIOBAN
-	MAMN     
-    echo "${bd}${bb}${yt} MAKE CHOICE AND PRESS ENTER. $nl"
+	MAMN
+	echo "${bd}${bb}${yt} MAKE CHOICE AND PRESS ENTER. $nl"
 
-    while [ 1 ]
-    do
-        read CHOICE
-        case "$CHOICE" in
+	while [ 1 ]; do
+		read CHOICE
+		case "$CHOICE" in
 
-            "1") ### Build Base Filesystem
-                echo "$bb Checking For Previous Build $nl"
-				echo ""
-				### Find Exsisting Build allow rename or delete
-				FRDS
-				### Make the rootfs directories
-				MRTFS
-				### Copy Files to the directories
-				CPFS
-				### Banner for downloading the src
-				SRCBAN
-				### Download the source
-                DLSRC
-				### INITIALIZE ROOTFS
-				INIT1
-				### SHOW COMPLETED
-				INIBAN
-				### Show the main menu
-                SMM
-                ;;
+		"1") ### Build Base Filesystem
+			echo "$bb Checking For Previous Build $nl"
+			echo ""
+			### Find Exsisting Build allow rename or delete
+			FRDS
+			### Make the rootfs directories
+			MRTFS
+			### Copy Files to the directories
+			CPFS
+			### Banner for downloading the src
+			SRCBAN
+			### Download the source
+			DLSRC
+			### INITIALIZE ROOTFS
+			INIT1
+			### SHOW COMPLETED
+			INIBAN
+			### Show the main menu
+			SMM
+			;;
 
-            "2") ### Build Kernel
-                clear
-				if [[ ! -d $tc ]]; then
-					SETTC
-				else
-					echo "$gb $bt $bd Toolchain-Found  $nl"
-					
-				fi
-				if [[ ! -d $ksrc ]]; then
-					DLKER
-				else
-					echo "$gb $bt $bd Kernel_SRC-Found $nl"	
-				fi
-				BLDKER
-				SMM
-                ;;
-            
-            "3") ### INSTALL THE KERNEL
-				echo "$bb INSTALL KERNEL $nl"
-				KERBAN2
-				stop1
-				INSKER
-				CMP
-				SMM
-                ;;
-            
-            "4") ### Make Flashable Image
-					echo "$bb Make Flashable Image $nl"
-				MKIMG
-				stop1
-				SMM
-                ;;
-            
-            "5") ### UPDATE GRUB
-				echo "$bb UPDATE GRUB.cfg $nl"
-				GRUB
-				SMM
-                ;;
+		"2") ### Build Kernel
+			clear
+			if [[ ! -d $tc ]]; then
+				SETTC
+			else
+				echo "$gb $bt $bd Toolchain-Found  $nl"
 
-            "6") 
-                ;;
+			fi
+			if [[ ! -d $ksrc ]]; then
+				DLKER
+			else
+				echo "$gb $bt $bd Kernel_SRC-Found $nl"
+			fi
+			BLDKER
+			SMM
+			;;
 
-            "99")
-				clear
-                exit 0
-                ;;
-        esac
-    done
+		"3") ### INSTALL THE KERNEL
+			echo "$bb INSTALL KERNEL $nl"
+			KERBAN2
+			stop1
+			INSKER
+			CMP
+			SMM
+			;;
+
+		"4") ### Make Flashable Image
+			echo "$bb Make Flashable Image $nl"
+			MKIMG
+			stop1
+			SMM
+			;;
+
+		"5") ### UPDATE GRUB
+			echo "$bb UPDATE GRUB.cfg $nl"
+			GRUB
+			SMM
+			;;
+
+		"6") ### FLASH IMG
+			echo "$bb FLASH IMG $nl"
+			FLIMG
+			stop1
+			SMM
+			;;
+
+		"q") ;;
+
+		\
+			"q")
+			clear
+			exit 0
+			;;
+		esac
+	done
 }
 
-KERBAN () {
-echo "$yt"
-echo "	 ____        _ _     _       _  __                    _"
-echo "        | __ ) _   _(_) | __| |     | |/ /___ _ __ _ __   ___| |"
-echo "        |  _ \| | | | | |/ _  |_____| ' // _ \  __|  _ \ / _ \ |"
-echo "        | |_) | |_| | | | (_| |_____| . \  __/ |  | | | |  __/ |"
-echo "        |____/ \__,_|_|_|\__,_|     |_|\_\___|_|  |_| |_|\___|_|"
-echo ""
-echo "	$bb        KERNEL BUILDING HIKEY970 V4.9.78 Linux Kernel $nl"
-echo ""
-echo ""
-echo "$bb $yt Kernel Build Choices $nl"
-echo ""
-echo "$yt Press B to Build The Kernel $nl"
-echo ""
-echo "$yt Press C to Configure Then Build $nl"
-echo " "
-echo "$yt Press O to Build with last Configuration $nl"
-echo ""
-echo "$yt Press X to RETURN TO MAIN MENU $nl"
-echo ""
-echo ""
-echo "$nl"
+KERBAN() {
+	echo "$yt"
+	echo "	 ____        _ _     _       _  __                    _"
+	echo "        | __ ) _   _(_) | __| |     | |/ /___ _ __ _ __   ___| |"
+	echo "        |  _ \| | | | | |/ _  |_____| ' // _ \  __|  _ \ / _ \ |"
+	echo "        | |_) | |_| | | | (_| |_____| . \  __/ |  | | | |  __/ |"
+	echo "        |____/ \__,_|_|_|\__,_|     |_|\_\___|_|  |_| |_|\___|_|"
+	echo ""
+	echo "	$bb        KERNEL BUILDING HIKEY970 V4.9.78 Linux Kernel $nl"
+	echo ""
+	echo ""
+	echo "$bb $yt Kernel Build Choices $nl"
+	echo ""
+	echo "$yt Press B to Build The Kernel $nl"
+	echo ""
+	echo "$yt Press C to Configure Then Build $nl"
+	echo " "
+	echo "$yt Press G to Configure Then Build in Graphic Menu $nl"
+	echo " "
+	echo "$yt Press G to Configure Then Build in Graphic Menu $nl"
+	echo " "
+	echo "$yt Press O to Build with last Configuration $nl"
+	echo ""
+	echo "$yt Press X to RETURN TO MAIN MENU $nl"
+	echo ""
+	echo ""
+	echo "$nl"
 }
 
-INIBAN () {
-echo $gt
-clear
-echo "'	 ___       _ _         ____                      _      _		 '"
-echo "'	|_ _|_ __ (_) |_      / ___|___  _ __ ___  _ __ | | ___| |_ ___	  "
-echo "'	 | ||  _ \| | __|____| |   / _ \|  _   _ \|  _ \| |/ _ \ __/ _ \ '"
-echo "'	 | || | | | | ||_____| |__| (_) | | | | | | |_) | |  __/ ||  __/ '"
-echo " 	|___|_| |_|_|\__|     \____\___/|_| |_| |_| .__/|_|\___|\__\___|  "
-echo "                                           	  |_|					  "
-echo ""
-echo "		    $bb INITIAL ROOTFS SETUP IS COMPLETE $nl"
-echo "$gt $bd 		  THERE IS NO NEED TO RUN OPTION 1 AGAIN $nl"
-echo "$gt $bd 		 	THE BUILD FILES ARE LOCATED @ $nl"
-echo "$yt $bd		$bb2  $nl"
-echo ""
-echo ""
-echo "	$rt   JUST REMEMBER THERE IS NO NEED TO RUN OPTION 1 AGAIN $nl"
-stop1
+INIBAN() {
+	echo $gt
+	clear
+	echo "'	 ___       _ _         ____                      _      _		 '"
+	echo "'	|_ _|_ __ (_) |_      / ___|___  _ __ ___  _ __ | | ___| |_ ___	  "
+	echo "'	 | ||  _ \| | __|____| |   / _ \|  _   _ \|  _ \| |/ _ \ __/ _ \ '"
+	echo "'	 | || | | | | ||_____| |__| (_) | | | | | | |_) | |  __/ ||  __/ '"
+	echo " 	|___|_| |_|_|\__|     \____\___/|_| |_| |_| .__/|_|\___|\__\___|  "
+	echo "                                           	  |_|					  "
+	echo ""
+	echo "		    $bb INITIAL ROOTFS SETUP IS COMPLETE $nl"
+	echo "$gt $bd 		  THERE IS NO NEED TO RUN OPTION 1 AGAIN $nl"
+	echo "$gt $bd 		 	THE BUILD FILES ARE LOCATED @ $nl"
+	echo "$yt $bd		$bb2  $nl"
+	echo ""
+	echo ""
+	echo "	$rt   JUST REMEMBER THERE IS NO NEED TO RUN OPTION 1 AGAIN $nl"
+	stop1
 }
 
-TCBAN () {
-echo $yt $it
-echo "              _____           _        ____ _           _		"
-echo "             |_   _|__   ___ | |      / ___| |__   __ _(_)_ __	"
-echo "               | |/ _ \ / _ \| |_____| |   |  _ \ / _  | |  _ \	"
-echo "               | | (_) | (_) | |_____| |___| | | | (_| | | | | |	"
-echo "               |_|\___/ \___/|_|      \____|_| |_|\__ _|_|_| |_|	"
-echo "$nl"
-echo "	    $bb AUTOMATIC DOWNLOAD INSTALL AND SETUP OF ARM 64 TOOLCHAIN $nl"
-echo "$gt 	https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads $nl"
-echo "$yt 		USING gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu $nl"
-stop1
+TCBAN() {
+	echo $yt $it
+	echo "              _____           _        ____ _           _		"
+	echo "             |_   _|__   ___ | |      / ___| |__   __ _(_)_ __	"
+	echo "               | |/ _ \ / _ \| |_____| |   |  _ \ / _  | |  _ \	"
+	echo "               | | (_) | (_) | |_____| |___| | | | (_| | | | | |	"
+	echo "               |_|\___/ \___/|_|      \____|_| |_|\__ _|_|_| |_|	"
+	echo "$nl"
+	echo "	    $bb AUTOMATIC DOWNLOAD INSTALL AND SETUP OF ARM 64 TOOLCHAIN $nl"
+	echo "$gt 	https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads $nl"
+	echo "$yt 		USING gcc-arm-8.2-2019.01-x86_64-aarch64-linux-gnu $nl"
+	stop1
 }
 
-USEBAN () {
-clear
-echo $yt
-echo "	      _            _           ____             __ _"
-echo "	     / \   ___ ___| |_        / ___|___  _ __  / _(_) __ _"
-echo "	    / _ \ / __/ __| __| _____| |   / _ \| '_ \| |_| |/ _  |"
-echo "	   / ___ \ (_| (__| |_ |_____| |__| (_) | | | |  _| | (_| |"
-echo "	  /_/   \_\___\___|\__(_)     \____\___/|_| |_|_| |_|\__, |"
-echo " 							      |___/"
-echo ""
-echo "		$bb CREATING USER AND PASSWORD FOR UBUNTU LOGIN $nl"
-echo "	  $rt $bd    THE USERNAME MUST BE LOWERCASE WITHOUT SPACES $nl"
-echo ""
+USEBAN() {
+	clear
+	echo $yt
+	echo "	      _            _           ____             __ _"
+	echo "	     / \   ___ ___| |_        / ___|___  _ __  / _(_) __ _"
+	echo "	    / _ \ / __/ __| __| _____| |   / _ \| '_ \| |_| |/ _  |"
+	echo "	   / ___ \ (_| (__| |_ |_____| |__| (_) | | | |  _| | (_| |"
+	echo "	  /_/   \_\___\___|\__(_)     \____\___/|_| |_|_| |_|\__, |"
+	echo " 							      |___/"
+	echo ""
+	echo "		$bb CREATING USER AND PASSWORD FOR UBUNTU LOGIN $nl"
+	echo "	  $rt $bd    THE USERNAME MUST BE LOWERCASE WITHOUT SPACES $nl"
+	echo ""
 }
 
-MIRBAN () {
-echo $yt
-clear
-echo " 	  ____ _                            __  __ _"
-echo " 	 / ___| |__   ___   ___  ___  ___  |  \/  (_)_ __ _ __ ___  _ _	"
-echo "	| |   | '_ \ / _ \ / _ \/ __|/ _ \ | |\/| | | '__| '__/ _ \| '__|"
-echo "	| |___| | | | (_) | (_) \__ \  __/ | |  | | | |  | | | (_) | |"	 
-echo "	 \____|_| |_|\___/ \___/|___/\___| |_|  |_|_|_|  |_|  \___/|_|"
-echo "$nl"
-echo "$bb USE A MIRRIOR THAT HAS ARM 64 PACKAGES FOR DOWNLOADING THE SRC PACKAGES $nl"
-echo "	$yt Go To https://launchpad.net/ubuntu/+archivemirrors      $nl"
-echo "	$gt THE WORKING ARM64 MIRRORS ARE LISTED $nl"
-echo ""
-echo ""
+MIRBAN() {
+	echo $yt
+	clear
+	echo " 	  ____ _                            __  __ _"
+	echo " 	 / ___| |__   ___   ___  ___  ___  |  \/  (_)_ __ _ __ ___  _ _	"
+	echo "	| |   | '_ \ / _ \ / _ \/ __|/ _ \ | |\/| | | '__| '__/ _ \| '__|"
+	echo "	| |___| | | | (_) | (_) \__ \  __/ | |  | | | |  | | | (_) | |"
+	echo "	 \____|_| |_|\___/ \___/|___/\___| |_|  |_|_|_|  |_|  \___/|_|"
+	echo "$nl"
+	echo "$bb USE A MIRRIOR THAT HAS ARM 64 PACKAGES FOR DOWNLOADING THE SRC PACKAGES $nl"
+	echo "	$yt Go To https://launchpad.net/ubuntu/+archivemirrors      $nl"
+	echo "	$gt THE WORKING ARM64 MIRRORS ARE LISTED $nl"
+	echo ""
+	echo ""
 }
 
-SRCBAN () {
-echo $yt
-clear
-echo ""
-echo "			 ____  _         ____  ____   ____"
-echo "			|  _ \| |       / ___||  _ \ / ___|"
-echo "			| | | | |   ____\___ \| |_) | |"
-echo "			| |_| | |__|_____|__) |  _ <| |___"
-echo "			|____/|_____|   |____/|_| \_\\____|"
-echo ""
-echo "		$bb DOWNLOADING SOURCE PACKAGES FROM THE MIRROR $nl"
-echo "$rt $bd 		DEPENDING ON INTERNET SPEED THIS MAY TAKE A WHILE $nl"
-echo ""
-stop1
+SRCBAN() {
+	echo $yt
+	clear
+	echo ""
+	echo "			 ____  _         ____  ____   ____"
+	echo "			|  _ \| |       / ___||  _ \ / ___|"
+	echo "			| | | | |   ____\___ \| |_) | |"
+	echo "			| |_| | |__|_____|__) |  _ <| |___"
+	echo "			|____/|_____|   |____/|_| \_\\____|"
+	echo ""
+	echo "		$bb DOWNLOADING SOURCE PACKAGES FROM THE MIRROR $nl"
+	echo "$rt $bd 		DEPENDING ON INTERNET SPEED THIS MAY TAKE A WHILE $nl"
+	echo ""
+	stop1
 }
 
-KERBAN2 () {
-echo $yt
-clear
-echo "        ___           _        _ _           _  __                    _"
-echo "       |_ _|_ __  ___| |_ __ _| | |         | |/ /___ _ __ _ __   ___| |"
-echo "        | ||  _ \/ __| __/ _  | | |  _____  |   // _ \  __|  _ \ / _ \ |"
-echo "        | || | | \__ \ || (_| | | | |_____| | . \  __/ |  | | | |  __/ |"
-echo "       |___|_| |_|___/\__\__,_|_|_|         |_|\_\___|_|  |_| |_|\___|_|"
-echo ""
-echo "		 $bb COPYING KERNEL / DEVICE TREE & INSTALLING MODULES $nl"
-echo "$bb 	NEXT USE OPTION 4 TO GENERATE IMAGE THEN OPTION 5 TO FLASH HIKEY970 $nl"
-echo ""
+KERBAN2() {
+	echo $yt
+	clear
+	echo "        ___           _        _ _           _  __                    _"
+	echo "       |_ _|_ __  ___| |_ __ _| | |         | |/ /___ _ __ _ __   ___| |"
+	echo "        | ||  _ \/ __| __/ _  | | |  _____  |   // _ \  __|  _ \ / _ \ |"
+	echo "        | || | | \__ \ || (_| | | | |_____| | . \  __/ |  | | | |  __/ |"
+	echo "       |___|_| |_|___/\__\__,_|_|_|         |_|\_\___|_|  |_| |_|\___|_|"
+	echo ""
+	echo "		 $bb COPYING KERNEL / DEVICE TREE & INSTALLING MODULES $nl"
+	echo "$bb 	NEXT USE OPTION 4 TO GENERATE IMAGE THEN OPTION 5 TO FLASH HIKEY970 $nl"
+	echo ""
 }
 
-
-BIOBAN () {
-echo "$bb$bt**********************************************************************************$nl"
-echo "$rt$bd**********************************************************************************$yt"
-echo " 	   ____  _             _           ____        _ _     _					 "
-echo "	  | __ )(_) ___  _ __ (_) ___     | __ ) _   _(_) | __| | ___ _ __			 "
-echo "	  |  _ \| |/ _ \|  _ \| |/ __|____|  _ \| | | | | |/ _  |/ _ \  __|		 "
-echo "	  | |_) | | (_) | | | | | (_|_____| |_) | |_| | | | (_| |  __/ |			 "
-echo "	  |____/|_|\___/|_| |_|_|\___|    |____/ \__ _|_|_|\__ _|\___|_|			 "
-echo ""
-echo "$rt$bd**********************************************************************************$nl"
-echo "$bb$bt**********************************************************************************$nl"
-echo "$nl"
+BIOBAN() {
+	echo "$bb$bt**********************************************************************************$nl"
+	echo "$rt$bd**********************************************************************************$yt"
+	echo " 	   ____  _             _           ____        _ _     _					 "
+	echo "	  | __ )(_) ___  _ __ (_) ___     | __ ) _   _(_) | __| | ___ _ __			 "
+	echo "	  |  _ \| |/ _ \|  _ \| |/ __|____|  _ \| | | | | |/ _  |/ _ \  __|		 "
+	echo "	  | |_) | | (_) | | | | | (_|_____| |_) | |_| | | | (_| |  __/ |			 "
+	echo "	  |____/|_|\___/|_| |_|_|\___|    |____/ \__ _|_|_|\__ _|\___|_|			 "
+	echo ""
+	echo "$rt$bd**********************************************************************************$nl"
+	echo "$bb$bt**********************************************************************************$nl"
+	echo "$nl"
 }
 
 #################### MAIN PROGRAM / SCRIPT #######################
 ### Set Exit on any Error
 set -ue -o pipefail
 ### Notify Start of Script
-resize -s 30 82
+# resize -s 30 82
 clear
 echo "$bb Starting Build Script BIONIC-BUILDER UBUNTU 18.04 $nl"
 echo ""
@@ -847,19 +878,22 @@ echo "$yt Bionic-Buddy is a All in 1 Setup Script For Hikey970 $nl"
 echo "$yt View Readme or visit https://github.com/Bigcountry907/Bionic-Builder $nl"
 echo "$yt Created by BigCountry907 @ https://discuss.96boards.org/c/products/hikey970 $nl"
 echo ""
-c=5
+c=0
 REWRITE="\e[25D\e[1A\e[K"
 echo "Starting..."
-while [ $c -gt 0 ]; do 
-    c=$((c-1))
-    sleep 1
-    echo -e "${REWRITE}$c"
+while [ $c -gt 0 ]; do
+	c=$((c - 1))
+	sleep 1
+	echo -e "${REWRITE}$c"
 done
 echo -e "${REWRITE}Done."
 ### Check required packages
 echo "Dependency check"
 for i in $REQUIRED; do
-	command -v $i >/dev/null 2>&1 || { echo >&2 "require $i but it's not installed.  Aborting."; exit 1; }
+	command -v $i >/dev/null 2>&1 || {
+		echo >&2 "require $i but it's not installed.  Aborting."
+		exit 1
+	}
 	echo "[$i ... OK]"
 done
 ### Call The Main Menu
