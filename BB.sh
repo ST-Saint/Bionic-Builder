@@ -747,8 +747,6 @@ KERBAN() {
 	echo " "
 	echo "$yt Press G to Configure Then Build in Graphic Menu $nl"
 	echo " "
-	echo "$yt Press G to Configure Then Build in Graphic Menu $nl"
-	echo " "
 	echo "$yt Press O to Build with last Configuration $nl"
 	echo ""
 	echo "$yt Press X to RETURN TO MAIN MENU $nl"
