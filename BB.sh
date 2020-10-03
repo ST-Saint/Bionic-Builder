@@ -109,8 +109,7 @@ BLDKER() {
 		echo "$nl"
 		clear
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
@@ -123,8 +122,7 @@ BLDKER() {
 		echo "$nl"
 		clear
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
@@ -137,8 +135,7 @@ BLDKER() {
 		echo "$nl"
 		clear
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
@@ -151,8 +148,7 @@ BLDKER() {
 		clear
 		echo "$nl"
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
@@ -572,8 +568,7 @@ INSKER() {
 	fi
 	echo "$gb $bt INSTALL MODULES $nl"
 	cd $tc
-	export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-	export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+	export CROSS_COMPILE=aarch64-linux-gnu-
 	aarch64-linux-gnu-gcc --version
 	cd $ksrc1
 	export ARCH=arm64
