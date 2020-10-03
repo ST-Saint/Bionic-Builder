@@ -77,7 +77,7 @@ kimg=$ksrc1/arch/arm64/boot/Image.gz
 ### Device Tree
 devtre=$ksrc1/arch/arm64/boot/dts/hisilicon/hi3670-hikey970.dtb
 ### local boot path
-bootpath=/boot/test
+bootpath=/boot
 ### Needed Packages to build image
 REQUIRED="qemu-debootstrap img2simg mkfs.ext4"
 
