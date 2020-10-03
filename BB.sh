@@ -100,7 +100,7 @@ SETTC() {
 }
 
 BLDKER() {
-	thread=$(grep ^cpu\\scores /proc/cpuinfo | uniq | awk '{print $4}')
+	thread=4
 	thduse=$(($thread - 2))
 	KERBAN
 	echo ""
