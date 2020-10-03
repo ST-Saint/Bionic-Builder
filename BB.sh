@@ -76,6 +76,8 @@ tc=$bb1/Tool-Chain
 kimg=$ksrc1/arch/arm64/boot/Image.gz
 ### Device Tree
 devtre=$ksrc1/arch/arm64/boot/dts/hisilicon/hi3670-hikey970.dtb
+### local boot path
+bootpath=/boot/test
 ### Needed Packages to build image
 REQUIRED="qemu-debootstrap img2simg mkfs.ext4"
 
@@ -114,7 +116,7 @@ BLDKER() {
 		export ARCH=arm64
 		make ARCH=arm64 mrproper
 		make ARCH=arm64 hikey970_defconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
@@ -128,7 +130,7 @@ BLDKER() {
 		export ARCH=arm64
 		make ARCH=arm64 hikey970_defconfig
 		make menuconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "g" ]] || [[ $REPLY = "G" ]]; then
@@ -142,7 +144,7 @@ BLDKER() {
 		export ARCH=arm64
 		make ARCH=arm64 hikey970_defconfig
 		make gconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "o" ]] || [[ $REPLY = "O" ]]; then
@@ -155,7 +157,7 @@ BLDKER() {
 		cd $ksrc1
 		export ARCH=arm64
 		make ARCH=arm64 oldconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "x" ]] || [[ $REPLY = "X" ]]; then
@@ -549,23 +551,23 @@ MKIMG() {
 
 INSKER() {
 	echo "$gb $bt COPY KERNEL $nl"
-	if [[ ! -f $bb4/Image-hikey970-v4.9.gz ]]; then
-		cp -avrf $kimg $bb4/
-		mv $bb4/Image.gz $bb4/Image-hikey970-v4.9.gz
+	if [[ ! -f $bootpath/test/Image-hikey970-v4.9.gz ]]; then
+		cp -avrf $kimg $bootpath/
+		mv $bootpath/test/Image.gz $bootpath/test/Image-hikey970-v4.9.gz
 		echo "$gb $bt Image Copied $nl"
 	else
-		rm -rf $bb4/Image-hikey970-v4.9.gz
-		cp -avrf $kimg $bb4/
-		mv $bb4/Image.gz $bb4/Image-hikey970-v4.9.gz
+		rm -rf $bootpath/Image-hikey970-v4.9.gz
+		cp -avrf $kimg $bootpath/test/
+		mv $bootpath/test/Image.gz $bootpath/test/Image-hikey970-v4.9.gz
 		echo "$gb $bt Image Copied $nl"
 	fi
 	echo "$gb $bt COPY DEVICE TREE $nl"
-	if [[ ! -f $bb4/hi3670-hikey970.dtb ]]; then
-		cp -avrf $devtre $bb4/
+	if [[ ! -f $bootpath/test/hi3670-hikey970.dtb ]]; then
+		cp -avrf $devtre $bootpath/test/
 		echo "$gb $bt DEVICE TREE Copied $nl"
 	else
-		rm -rf $bb4/hi3670-hikey970.dtb
-		cp -avrf $devtre $bb4/
+		rm -rf $bootpath/test/hi3670-hikey970.dtb
+		cp -avrf $devtre $bootpath/test/
 		echo "$gb $bt DEVICE TREE Copied $nl"
 	fi
 	echo "$gb $bt INSTALL MODULES $nl"
