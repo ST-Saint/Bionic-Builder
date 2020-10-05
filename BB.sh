@@ -548,11 +548,11 @@ MKIMG() {
 INSKER() {
 	echo "$gb $bt COPY KERNEL $nl"
 	if [[ ! -f $bootpath/test/Image-hikey970-v4.9.gz ]]; then
-		cp -avrf $kimg $bootpath/
+		cp -avrf $kimg $bootpath/test/
 		mv $bootpath/test/Image.gz $bootpath/test/Image-hikey970-v4.9.gz
 		echo "$gb $bt Image Copied $nl"
 	else
-		rm -rf $bootpath/Image-hikey970-v4.9.gz
+		rm -rf $bootpath/test/Image-hikey970-v4.9.gz
 		cp -avrf $kimg $bootpath/test/
 		mv $bootpath/test/Image.gz $bootpath/test/Image-hikey970-v4.9.gz
 		echo "$gb $bt Image Copied $nl"
