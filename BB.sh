@@ -573,6 +573,7 @@ INSKER() {
 	cd $ksrc1
 	export ARCH=arm64
 	make ARCH=arm64 modules_install
+	make ARCH=arm64 headers_install INSTALL_HDR_PATH=/usr
 }
 
 INSKER2() {
