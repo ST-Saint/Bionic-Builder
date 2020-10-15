@@ -116,7 +116,7 @@ BLDKER() {
 		make ARCH=arm64 mrproper
 		make ARCH=arm64 hikey970_defconfig
 		bear make ARCH=arm64 -j20
-		INSKER2
+		INSKER
 		CMP
 	elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
 		echo "$nl"
@@ -129,7 +129,7 @@ BLDKER() {
 		make ARCH=arm64 hikey970_defconfig
 		make menuconfig
 		bear make ARCH=arm64 -j20
-		INSKER2
+		INSKER
 		CMP
 	elif [[ $REPLY = "g" ]] || [[ $REPLY = "G" ]]; then
 		echo "$nl"
@@ -142,7 +142,7 @@ BLDKER() {
 		make ARCH=arm64 hikey970_defconfig
 		make gconfig
 		bear make ARCH=arm64 -j20
-		INSKER2
+		INSKER
 		CMP
 	elif [[ $REPLY = "o" ]] || [[ $REPLY = "O" ]]; then
 		clear
@@ -154,7 +154,7 @@ BLDKER() {
 		export ARCH=arm64
 		make ARCH=arm64 oldconfig
 		bear make ARCH=arm64 -j20
-		INSKER2
+		INSKER
 		CMP
 	elif [[ $REPLY = "x" ]] || [[ $REPLY = "X" ]]; then
 		echo "$nl"
