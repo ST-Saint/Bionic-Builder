@@ -115,7 +115,7 @@ BLDKER() {
 		export ARCH=arm64
 		make ARCH=arm64 mrproper
 		make ARCH=arm64 hikey970_defconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER
 		CMP
 	elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
@@ -128,7 +128,7 @@ BLDKER() {
 		export ARCH=arm64
 		make ARCH=arm64 hikey970_defconfig
 		make menuconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER
 		CMP
 	elif [[ $REPLY = "g" ]] || [[ $REPLY = "G" ]]; then
@@ -141,7 +141,7 @@ BLDKER() {
 		export ARCH=arm64
 		make ARCH=arm64 hikey970_defconfig
 		make gconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER
 		CMP
 	elif [[ $REPLY = "o" ]] || [[ $REPLY = "O" ]]; then
@@ -153,7 +153,7 @@ BLDKER() {
 		cd $ksrc1
 		export ARCH=arm64
 		make ARCH=arm64 oldconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER
 		CMP
 	elif [[ $REPLY = "x" ]] || [[ $REPLY = "X" ]]; then
@@ -671,12 +671,6 @@ SMM() {
 
 		"2") ### Build Kernel
 			clear
-			if [[ ! -d $tc ]]; then
-				SETTC
-			else
-				echo "$gb $bt $bd Toolchain-Found  $nl"
-
-			fi
 			if [[ ! -d $ksrc ]]; then
 				DLKER
 			else
