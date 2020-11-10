@@ -880,15 +880,6 @@ while [ $c -gt 0 ]; do
 	echo -e "${REWRITE}$c"
 done
 echo -e "${REWRITE}Done."
-### Check required packages
-echo "Dependency check"
-for i in $REQUIRED; do
-	command -v $i >/dev/null 2>&1 || {
-		echo >&2 "require $i but it's not installed.  Aborting."
-		exit 1
-	}
-	echo "[$i ... OK]"
-done
 ### Call The Main Menu
 SMM
 exit 0
