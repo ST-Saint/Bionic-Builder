@@ -16,9 +16,8 @@ nl=$(tput sgr0)
 
 #################### PATH DEFINITION #######################
 
-cd
 ###Main Directory
-bb1=$(pwd)/Bionic-Builder
+bb1=$(cd "$(dirname "$0")"; pwd)  
 ###SRC stage Directory $(pwd)/Bionic-Builder/Ubuntu-SRC/
 bbb2=$bb1/Ubuntu-SRC
 ###SRC BUILD Directory $(pwd)/Bionic-Builder/Ubuntu-SRC/build
@@ -107,55 +106,51 @@ BLDKER() {
 		echo "$nl"
 		clear
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
 		make ARCH=arm64 mrproper
 		make ARCH=arm64 hikey970_defconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "c" ]] || [[ $REPLY = "C" ]]; then
 		echo "$nl"
 		clear
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
 		make ARCH=arm64 hikey970_defconfig
 		make menuconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "g" ]] || [[ $REPLY = "G" ]]; then
 		echo "$nl"
 		clear
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
 		make ARCH=arm64 hikey970_defconfig
 		make gconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "o" ]] || [[ $REPLY = "O" ]]; then
 		clear
 		echo "$nl"
 		cd $tc
-		export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-		export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 		aarch64-linux-gnu-gcc --version
 		cd $ksrc1
 		export ARCH=arm64
 		make ARCH=arm64 oldconfig
-		bear make ARCH=arm64 -j20
+		make ARCH=arm64 -j20
 		INSKER2
 		CMP
 	elif [[ $REPLY = "x" ]] || [[ $REPLY = "X" ]]; then
@@ -570,8 +565,7 @@ INSKER() {
 	fi
 	echo "$gb $bt INSTALL MODULES $nl"
 	cd $tc
-	export PATH=$(pwd)/gcc-arm-8.2/bin/:$PATH
-	export CROSS_COMPILE=$(pwd)/gcc-arm-8.2/bin/aarch64-linux-gnu-
+	export CROSS_COMPILE=aarch64-linux-gnu-
 	aarch64-linux-gnu-gcc --version
 	cd $ksrc1
 	export ARCH=arm64
@@ -636,7 +630,7 @@ DLSRC() {
 	DISTRO=${DISTRO:-"bionic"}
 	MIRRORS=${MIRRORS:-}
 	SOFTWARE=${SOFTWARE:-"ssh,zsh,tmux,linux-firmware,vim-nox,net-tools,network-manager,wget,tasksel,gnupg2,nano,net-tools,wpasupplicant,parted,fakeroot,kernel-wedge,build-essential,python-pip,kernel-package,ccache,libssl-dev,gcc"}
-	qemu-debootstrap --arch arm64 --include=$SOFTWARE --components=main,multiverse,universe $DISTRO $bb3 $mirror
+	qemu-debootstrap --arch=arm64 --keyring=$bf/keyrings/ubuntu-archive-keyring.gpg --include=$SOFTWARE --components=main,multiverse,universe $DISTRO $bb3 $mirror
 }
 
 ##################################### MAIN MENU #####################################
