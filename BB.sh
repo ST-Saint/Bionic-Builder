@@ -409,12 +409,7 @@ MRTFS() {
 }
 
 GRUB() {
-	mkdir $bb1/Install/mnt
-	sudo mount -o loop $bb1/Install/boot-hikey970.uefi.img $bb1/Install/mnt
-	cp -arv $bf/grub.cfg $bb9/
-	cp -arv $bf/grub.cfg $bb1/Install/mnt/boot/grub/
-	sudo umount $bb1/Install/mnt
-	rm -rf $bb1/Install/mnt
+	sudo cp -arv $bf/grub.cfg /boot/grub/grub.cfg
 	CMP
 }
 
